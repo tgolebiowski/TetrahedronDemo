@@ -193,22 +193,18 @@ bool Update( void* gameMemory, float millisecondsElapsed, SoundRenderBuffer* sou
     GameMemory* gMem = (GameMemory*)gameMemory;
 
     static float step = PI / 256.0f;
-    static float magicY = -0.247437f;
-    static float magicX = 0.834486f;
+    const float magicY = -0.247437f;
+    const float magicX = 0.834486f;
     static float magicZ = -0.846755f;
 
     if( IsKeyDown( 'z' ) )
         magicZ += step;
     if( IsKeyDown( 'x' ) )
         magicZ -= step;
-    if( IsKeyDown( 's' ) )
-        magicX += step;
-    if( IsKeyDown( 'd' ) )
-        magicX -= step;
-    if( IsKeyDown( 'y' ) )
-        magicY += step;
-    if( IsKeyDown( 'u' ) )
-        magicY -= step;
+   
+    const float maxRotation = PI;
+    float mousex, mousey;
+    GetMousePosition( &mousex, &mousey );
 
     const float wiggleStep = ( ( PI / 180.0f ) * 60.0f ) / 1000.0f;
     const float angleWiggleMax = PI / 100.0f;
@@ -226,8 +222,8 @@ bool Update( void* gameMemory, float millisecondsElapsed, SoundRenderBuffer* sou
         const float wiggleOffset = ( 2.0f * PI ) / 5.0f;
         float wiggleValue = cosf( wiggle + ( (float)i * wiggleOffset ) ) * angleWiggleMax;
 
-        SetRotation( &y, 0.0f, 1.0f, 0.0f, magicY + wiggleValue );
-        SetRotation( &x, 1.0f, 0.0f, 0.0f, magicX + wiggleValue );
+        SetRotation( &y, 0.0f, 1.0f, 0.0f, magicY + ( mousey * maxRotation ) + wiggleValue );
+        SetRotation( &x, 1.0f, 0.0f, 0.0f, magicX + ( mousex * maxRotation ) + wiggleValue );
         SetRotation( &z, 0.0f, 0.0f, 1.0f, magicZ + zExtra );
         gMem->renderParams[i].transform = MultMatrix( MultMatrix( y, x ), z );
     }
